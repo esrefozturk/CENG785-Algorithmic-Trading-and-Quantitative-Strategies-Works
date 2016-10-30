@@ -6,7 +6,7 @@ ConnectionType=acceptor
 
 BeginString=FIX.4.2
 UseDataDictionary=Y
-DataDictionary=C:\Selim\Programs\QuickFIXJ\etc\FIX42.xml
+DataDictionary=FIX42.xml
 
 HeartBtInt=30
 LogonTimeout=10
@@ -20,8 +20,8 @@ EndDay=sunday
 StartTime=01:00:00
 EndTime=23:00:00
 
-FileLogPath=C:\Selim\Dropbox\Selim\Development\Workspaces\NetBeans\Ceng785-HW1\TEX\TEXLog
-FileStorePath=C:\Selim\Dropbox\Selim\Development\Workspaces\NetBeans\Ceng785-HW1\TEX\TEXStore
+FileLogPath=Log
+FileStorePath=Store
 
 [SESSION]
 

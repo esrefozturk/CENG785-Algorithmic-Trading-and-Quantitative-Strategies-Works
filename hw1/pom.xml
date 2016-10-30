@@ -14,6 +14,11 @@
             <artifactId>quickfixj-core</artifactId>
             <version>1.6.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.quickfixj</groupId>
+            <artifactId>quickfixj-messages-fix42</artifactId>
+            <version>1.6.2</version>
+        </dependency>
     </dependencies>
 
 
