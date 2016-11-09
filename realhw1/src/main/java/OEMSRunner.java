@@ -1,5 +1,9 @@
 import quickfix.*;
+import quickfix.field.*;
+import quickfix.fix42.MarketDataRequest;
+import quickfix.fix42.OrderStatusRequest;
 
+import java.security.acl.*;
 import java.util.TimeZone;
 
 /**
@@ -39,6 +43,34 @@ public class OEMSRunner {
         oemsSocketInitiator.stop();
     }
 
+
+    public MarketDataRequest createMarketDataRequest() {
+        MarketDataRequest message = new MarketDataRequest();
+
+        MDReqID mdReqID = new MDReqID("id");
+        SubscriptionRequestType subscriptionRequestType = new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT);
+        MarketDepth marketDepth = new MarketDepth(0);
+
+        MarketDataRequest.NoMDEntryTypes noMDEntryTypes = new MarketDataRequest.NoMDEntryTypes();
+        MDEntryType mdEntryType = new MDEntryType(MDEntryType.BID);
+        Symbol symbol = new Symbol("IBM");
+        MarketDataRequest.NoRelatedSym noRelatedSym = new MarketDataRequest.NoRelatedSym();
+        noRelatedSym.set(symbol);
+
+        noMDEntryTypes.set(mdEntryType);
+
+        message.set(mdReqID);
+        message.set(subscriptionRequestType);
+        message.set(marketDepth);
+        message.addGroup(noMDEntryTypes);
+        message.addGroup(noRelatedSym);
+
+        return message;
+
+
+    }
+
+
     public static void main(String[] args) throws Exception {
         TimeZone.setDefault(TimeZone.getTimeZone("Turkey"));
 
@@ -47,9 +79,14 @@ public class OEMSRunner {
         oemsRunner.start();
 
         oemsRunner.session.logon();
+        System.out.println("hebele1");
+        try                               { Thread.sleep( 5000 ) ; }
+        catch ( InterruptedException e )  {                        }
+        oemsRunner.session.send( oemsRunner.createMarketDataRequest() );
 
-        oemsRunner.session.logout();
+        System.out.println("hebele2" +
+                "");
 
-        oemsRunner.stop();
+
     }
 }
