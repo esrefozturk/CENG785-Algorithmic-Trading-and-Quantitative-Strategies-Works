@@ -68,63 +68,29 @@ public class MarketApplication extends MessageCracker implements Application {
     }
 
 
-    public void onMessage(quickfix.fix42.MarketDataRequest message, SessionID sessionId) {
+
+    public void onMessage(quickfix.fix42.MarketDataRequest message, SessionID sessionId) throws FieldNotFound {
+
         System.out.println(name + " : MarketDataRequest");
     }
-
-
     public void onMessage(quickfix.fix42.NewOrderSingle message, SessionID sessionId) throws FieldNotFound {
 
         System.out.println(name + " : NewOrderSingle");
-
-
-        ClOrdID fClOrdID = new ClOrdID();
-        Symbol fSymbol = new Symbol();
-        Side fSide = new Side();
-        TransactTime fTransactTime = new TransactTime();
-        OrderQty fOrderQty = new OrderQty();
-        OrdType fOrdType = new OrdType();
-        Price fPrice = new Price();
-        StopPx fStopPx = new StopPx();
-        TimeInForce fTimeInForce = new TimeInForce();
-
-        message.get(fClOrdID);
-        message.get(fSymbol);
-        message.get(fSide);
-        message.get(fTransactTime);
-        message.get(fOrderQty);
-        message.get(fOrdType);
-        message.get(fPrice);
-        message.get(fStopPx);
-        message.get(fTimeInForce);
-
-
-        System.out.println(fClOrdID.toString());
-        System.out.println(fSymbol.toString());
-        System.out.println(fSide.toString());
-        System.out.println(fTransactTime.toString());
-        System.out.println(fOrderQty.toString());
-        System.out.println(fOrdType.toString());
-        System.out.println(fPrice.toString());
-        System.out.println(fStopPx.toString());
-        System.out.println(fTimeInForce.toString());
-
     }
+    public void onMessage(quickfix.fix42.OrderStatusRequest message, SessionID sessionId) throws FieldNotFound {
 
-
-    public void onMessage(quickfix.fix42.OrderStatusRequest message, SessionID sessionId) {
         System.out.println(name + " : OrderStatusRequest");
     }
+    public void onMessage(quickfix.fix42.OrderCancelRequest message, SessionID sessionId) throws FieldNotFound {
 
-
-    public void onMessage(quickfix.fix42.OrderCancelRequest message, SessionID sessionId) {
         System.out.println(name + " : OrderCancelRequest");
     }
+    public void onMessage(quickfix.fix42.OrderCancelReplaceRequest message, SessionID sessionId) throws FieldNotFound {
 
-
-    public void onMessage(quickfix.fix42.OrderCancelReplaceRequest message, SessionID sessionId) {
         System.out.println(name + " : OrderCancelReplaceRequest");
     }
+
+
 
 }
 
