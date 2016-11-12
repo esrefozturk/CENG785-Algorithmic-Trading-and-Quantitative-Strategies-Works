@@ -4,7 +4,6 @@
 
 
 import quickfix.*;
-import quickfix.field.*;
 import quickfix.fix42.MessageCracker;
 
 
@@ -68,28 +67,30 @@ public class MarketApplication extends MessageCracker implements Application {
     }
 
 
-
     public void onMessage(quickfix.fix42.MarketDataRequest message, SessionID sessionId) throws FieldNotFound {
 
         System.out.println(name + " : MarketDataRequest");
     }
+
     public void onMessage(quickfix.fix42.NewOrderSingle message, SessionID sessionId) throws FieldNotFound {
 
         System.out.println(name + " : NewOrderSingle");
     }
+
     public void onMessage(quickfix.fix42.OrderStatusRequest message, SessionID sessionId) throws FieldNotFound {
 
         System.out.println(name + " : OrderStatusRequest");
     }
+
     public void onMessage(quickfix.fix42.OrderCancelRequest message, SessionID sessionId) throws FieldNotFound {
 
         System.out.println(name + " : OrderCancelRequest");
     }
+
     public void onMessage(quickfix.fix42.OrderCancelReplaceRequest message, SessionID sessionId) throws FieldNotFound {
 
         System.out.println(name + " : OrderCancelReplaceRequest");
     }
-
 
 
 }

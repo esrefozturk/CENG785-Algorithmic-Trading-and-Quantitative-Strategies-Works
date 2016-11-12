@@ -30,6 +30,51 @@ public class OEMSRunner {
         oemsSocketInitiator = new SocketInitiator(oems, oemsFileStoreFactory, oemsSettings, oemsFileLogFactory, oemsMessageFactory);
     }
 
+    public static void main(String[] args) throws Exception {
+
+
+        TimeZone.setDefault(TimeZone.getTimeZone("Turkey"));
+
+        OEMSRunner oemsRunner = new OEMSRunner("OEMSSettings.txt");
+
+        oemsRunner.start();
+
+        oemsRunner.session.logon();
+        System.out.println("hebele1");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+        }
+
+        RealFrame frame = new RealFrame(oemsRunner);
+
+
+        System.out.println("hebele2");
+
+
+    }
+
+    public void sendMarketDataRequest() {
+        this.session.send(this.createMarketDataRequest());
+    }
+
+    public void sendNewOrderSingle() {
+        this.session.send(this.createNewOrderSingle());
+    }
+
+    public void sendOrderStatusRequest() {
+        this.session.send(this.createOrderStatusRequest());
+    }
+
+    public void sendOrderCancelRequest() {
+        this.session.send(this.createOrderCancelRequest());
+    }
+
+    public void sendOrderCancelReplaceRequest() {
+        this.session.send(this.createOrderCancelReplaceRequest());
+    }
+
+
     public void start() throws ConfigError {
         oemsSocketInitiator.start();
         SessionID sessionId = oemsSocketInitiator.getSessions().get(0);
@@ -42,7 +87,6 @@ public class OEMSRunner {
 
         oemsSocketInitiator.stop();
     }
-
 
     public MarketDataRequest createMarketDataRequest() {
         MarketDataRequest message = new MarketDataRequest();
@@ -153,26 +197,5 @@ public class OEMSRunner {
 
 
         return message;
-    }
-
-
-    public static void main(String[] args) throws Exception {
-        TimeZone.setDefault(TimeZone.getTimeZone("Turkey"));
-
-        OEMSRunner oemsRunner = new OEMSRunner("OEMSSettings.txt");
-
-        oemsRunner.start();
-
-        oemsRunner.session.logon();
-        System.out.println("hebele1");
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-        }
-        oemsRunner.session.send(oemsRunner.createOrderCancelReplaceRequest());
-
-        System.out.println("hebele2");
-
-
     }
 }
