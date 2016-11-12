@@ -17,7 +17,23 @@ public class RealFrame extends JFrame {
         setSize(600, 400);
         setLayout(new FlowLayout());
 
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
+        final JComboBox<SideComboItem> sideJComboBox = new JComboBox<SideComboItem>();
+        sideJComboBox.addItem(new SideComboItem(Side.BUY));
+        sideJComboBox.addItem(new SideComboItem(Side.SELL));
+
+        final JComboBox<TimeInForceComboItem> timeInForceComboBox = new JComboBox<TimeInForceComboItem>();
+        timeInForceComboBox.addItem(new TimeInForceComboItem(TimeInForce.DAY));
+        timeInForceComboBox.addItem(new TimeInForceComboItem(TimeInForce.GOOD_TILL_DATE));
+        timeInForceComboBox.addItem(new TimeInForceComboItem(TimeInForce.FILL_OR_KILL));
+        timeInForceComboBox.addItem(new TimeInForceComboItem(TimeInForce.IMMEDIATE_OR_CANCEL));
+
+        final JComboBox<OrdTypeComboItem> ordTypeComboBox = new JComboBox<OrdTypeComboItem>();
+        ordTypeComboBox.addItem(new OrdTypeComboItem(OrdType.MARKET));
+        ordTypeComboBox.addItem(new OrdTypeComboItem(OrdType.LIMIT));
 
 
         JButton marketDataRequestButton = new JButton("Market Data Request");
@@ -25,6 +41,14 @@ public class RealFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 oemsRunner.sendMarketDataRequest();
+
+                char side = ((SideComboItem)sideJComboBox.getSelectedItem()).value;
+                char timeInForce = ((TimeInForceComboItem)timeInForceComboBox.getSelectedItem()).value;
+                char ordType = ((OrdTypeComboItem)ordTypeComboBox.getSelectedItem()).value;
+
+                System.out.println(side + " " + timeInForce + " " + ordType);
+
+
             }
         });
 
@@ -59,20 +83,6 @@ public class RealFrame extends JFrame {
                 oemsRunner.sendOrderCancelReplaceRequest();
             }
         });
-
-        JComboBox<SideComboItem> sideJComboBox = new JComboBox<SideComboItem>();
-        sideJComboBox.addItem(new SideComboItem(Side.BUY));
-        sideJComboBox.addItem(new SideComboItem(Side.SELL));
-
-        JComboBox<TimeInForceComboItem> timeInForceComboBox = new JComboBox<TimeInForceComboItem>();
-        timeInForceComboBox.addItem(new TimeInForceComboItem(TimeInForce.DAY));
-        timeInForceComboBox.addItem(new TimeInForceComboItem(TimeInForce.GOOD_TILL_DATE));
-        timeInForceComboBox.addItem(new TimeInForceComboItem(TimeInForce.FILL_OR_KILL));
-        timeInForceComboBox.addItem(new TimeInForceComboItem(TimeInForce.IMMEDIATE_OR_CANCEL));
-
-        JComboBox<OrdTypeComboItem> ordTypeComboBox = new JComboBox<OrdTypeComboItem>();
-        ordTypeComboBox.addItem(new OrdTypeComboItem(OrdType.MARKET));
-        ordTypeComboBox.addItem(new OrdTypeComboItem(OrdType.LIMIT));
 
 
         add(marketDataRequestButton);
