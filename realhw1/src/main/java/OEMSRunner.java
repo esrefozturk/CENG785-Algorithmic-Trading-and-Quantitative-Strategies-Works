@@ -57,8 +57,11 @@ public class OEMSRunner {
         TimeInForce aTimeInForce;
         OrderQty aOrderQty;
 
+        oemsRunner.sendTWAPOrder(new OrdType(OrdType.MARKET),
+                new Symbol("IBM"), new Side(Side.SELL), new TimeInForce(TimeInForce.IMMEDIATE_OR_CANCEL),
+                new OrderQty(1), 5, 10);
 
-        while (true) {
+            while (true) {
             System.out.print(prompt);
             Scanner reader = new Scanner(System.in);
             line = reader.nextLine();
@@ -272,5 +275,22 @@ public class OEMSRunner {
 
 
         return message;
+    }
+
+    public void sendTWAPOrder(final OrdType aOrdType, final Symbol aSymbol, final Side aSide, final TimeInForce aTimeInForce, final OrderQty aOrderQty, final long interval, final int count) {
+        for (int i = 0; i < count; i++) {
+            final int j = i;
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        Thread.sleep((j + 1) * interval * 1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    sendNewOrderSingle(aOrdType,aSymbol,aSide,aTimeInForce,aOrderQty);
+
+                }
+            }).start();
+        }
     }
 }
