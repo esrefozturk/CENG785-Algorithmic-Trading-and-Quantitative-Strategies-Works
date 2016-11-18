@@ -30,7 +30,7 @@ public class OEMSRunner {
         oemsSocketInitiator = new SocketInitiator(oems, oemsFileStoreFactory, oemsSettings, oemsFileLogFactory, oemsMessageFactory);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] argz) throws Exception {
 
 
         TimeZone.setDefault(TimeZone.getTimeZone("Turkey"));
@@ -40,38 +40,136 @@ public class OEMSRunner {
         oemsRunner.start();
 
         oemsRunner.session.logon();
-        System.out.println("hebele1");
+
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
         }
 
-        RealFrame frame = new RealFrame(oemsRunner);
+
+        /*
+
+        String prompt = "FIXME> ";
+        String line;
+        String[] args;
+        Symbol aSymbol;
+        MarketDepth aDepth;
+        Side aSide;
+        TimeInForce aTimeInForce;
+        OrderQty aOrderQty;
 
 
-        System.out.println("hebele2");
+        while(true){
+            System.out.print(prompt);
+            Scanner reader = new Scanner(System.in);
+            line = reader.nextLine();
+            args = line.split(" ");
+            if( args[0] == "exit" ){
+                System.out.println("BYE");
+                break;
+            }
+            else if(args[0] == "help"){
+                System.out.println("TopOfBook <Symbol>");
+                System.out.println("DepthOfBook <Symbol> <Depth>");
+                System.out.println("MarketOrder <Symbol> <Side> <TimeInForce> <Quantity>");
+                System.out.println("LimitOrder <Symbol> <Side> <TimeInForce> <Quantity> <Price>");
+                System.out.println("Status <Id> <Symbol> <Side>");
+                System.out.println("Cancel <OrigId> <Id> <Symbol> <Side>");
+                System.out.println("MarketReplace <OrigId> <Id> <Symbol> <Side>");
+                System.out.println("LimitReplace <OrigId> <Id> <Symbol> <Side>");
+            }
+            else if( args[0] == "TopOfBook" ){
+                if( args.length < 3 ){
+                    System.out.println("TopOfBook <Symbol>");
+                }
+                aSymbol = new Symbol(args[1]);
+                aDepth = new MarketDepth(1);
+                oemsRunner.sendMarketDataRequest(aSymbol,aDepth);
+            }
+            else if( args[0] == "DepthOfBook" ){
+                if( args.length < 3 ){
+                    System.out.println("TopOfBook <Symbol>");
+                    continue;
+                }
+                aSymbol = new Symbol(args[1]);
+                aDepth = new MarketDepth(Integer.parseInt(args[2]));
+                oemsRunner.sendMarketDataRequest(aSymbol,aDepth);
+            }
+            else if( args[0] == "MarketOrder" ){
+                if( args.length < 5 ){
+                    System.out.println("TopOfBook <Symbol>");
+                }
+                aSymbol = new Symbol(args[1]);
+                if(args[2] == "SELL"){
+                    aSide = new Side(Side.SELL);
+                }
+                else if(args[2]=="BUY"){
+                    aSide = new Side(Side.BUY);
+                }
+                else{
+                    System.out.println("TopOfBook <Symbol>");
+                    continue;
+                }
+
+                if( args[3] == "DAY" ){
+                    aTimeInForce = new TimeInForce(TimeInForce.DAY);
+                }
+                else if( args[3] == "GOOD_TILL_DATE" ){
+                    aTimeInForce = new TimeInForce(TimeInForce.GOOD_TILL_DATE);
+                }
+                else if( args[3] == "FILL_OR_KILL" ){
+                    aTimeInForce = new TimeInForce(TimeInForce.FILL_OR_KILL);
+                }
+                else if( args[3] == "IMMEDIATE_OR_CANCEL" ){
+                    aTimeInForce = new TimeInForce(TimeInForce.IMMEDIATE_OR_CANCEL);
+                }
+                else{
+                    System.out.println("TopOfBook <Symbol>");
+                    continue;
+                }
+
+                aOrderQty = new OrderQty(Integer.parseInt(args[3]));
+
+
+                oemsRunner.sendNewOrderSingle(new OrdType(OrdType.MARKET),aSymbol,aSide,aTimeInForce,aOrderQty);
+            }
+            else if( args[0] == "Status" ){
+                oemsRunner.sendMarketDataRequest(args[1],Integer.parseInt(args[2]));
+            }
+            else if( args[0] == "Cancel" ){
+                oemsRunner.sendMarketDataRequest(args[1],Integer.parseInt(args[2]));
+            }
+            else if( args[0] == "Replace" ){
+                oemsRunner.sendMarketDataRequest(args[1],Integer.parseInt(args[2]));
+            }
+
+
+
+        }
+
+        */
 
 
     }
 
-    public void sendMarketDataRequest() {
-        this.session.send(this.createMarketDataRequest());
+    public void sendMarketDataRequest(Symbol aSymbol, MarketDepth aDepth) {
+        this.session.send(this.createMarketDataRequest(aSymbol, aDepth));
     }
 
-    public void sendNewOrderSingle() {
-        this.session.send(this.createNewOrderSingle());
+    public void sendNewOrderSingle(OrdType aOrdType, Symbol aSymbol, Side aSide, TimeInForce aTimeInForce, OrderQty aOrderQty) {
+        this.session.send(this.createNewOrderSingle(aOrdType, aSymbol, aSide, aTimeInForce, aOrderQty));
     }
 
-    public void sendOrderStatusRequest() {
-        this.session.send(this.createOrderStatusRequest());
+    public void sendOrderStatusRequest(ClOrdID aClOrdID, Symbol aSymbol, Side aSide) {
+        this.session.send(this.createOrderStatusRequest(aClOrdID, aSymbol, aSide));
     }
 
-    public void sendOrderCancelRequest() {
-        this.session.send(this.createOrderCancelRequest());
+    public void sendOrderCancelRequest(OrigClOrdID aOrigClOrdID, ClOrdID aClOrdID, Symbol aSymbol, Side aSide) {
+        this.session.send(this.createOrderCancelRequest(aOrigClOrdID, aClOrdID, aSymbol, aSide));
     }
 
-    public void sendOrderCancelReplaceRequest() {
-        this.session.send(this.createOrderCancelReplaceRequest());
+    public void sendOrderCancelReplaceRequest(OrigClOrdID aOrigClOrdID, ClOrdID aClOrdID, Symbol aSymbol, Side aSide) {
+        this.session.send(this.createOrderCancelReplaceRequest(aOrigClOrdID, aClOrdID, aSymbol, aSide));
     }
 
 
@@ -88,16 +186,16 @@ public class OEMSRunner {
         oemsSocketInitiator.stop();
     }
 
-    public MarketDataRequest createMarketDataRequest() {
+    public MarketDataRequest createMarketDataRequest(Symbol aSymbol, MarketDepth aDepth) {
         MarketDataRequest message = new MarketDataRequest();
 
         MDReqID mdReqID = new MDReqID("id");
         SubscriptionRequestType subscriptionRequestType = new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT);
-        MarketDepth marketDepth = new MarketDepth(0);
+        MarketDepth marketDepth = aDepth;
 
         MarketDataRequest.NoMDEntryTypes noMDEntryTypes = new MarketDataRequest.NoMDEntryTypes();
         MDEntryType mdEntryType = new MDEntryType(MDEntryType.BID);
-        Symbol symbol = new Symbol("IBM");
+        Symbol symbol = aSymbol;
         MarketDataRequest.NoRelatedSym noRelatedSym = new MarketDataRequest.NoRelatedSym();
         noRelatedSym.set(symbol);
 
@@ -114,19 +212,19 @@ public class OEMSRunner {
 
     }
 
-    public NewOrderSingle createNewOrderSingle() {
+    public NewOrderSingle createNewOrderSingle(OrdType aOrdType, Symbol aSymbol, Side aSide, TimeInForce aTimeInForce, OrderQty aOrderQty) {
         NewOrderSingle message = new NewOrderSingle();
 
         ClOrdID fClOrdID = new ClOrdID("OEMS-Order0001-30.10.2015-13:59:00");
         HandlInst fHandlInst = new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PUBLIC);
-        Symbol fSymbol = new Symbol("IBM");
-        Side fSide = new Side(Side.BUY);
+        Symbol fSymbol = aSymbol;
+        Side fSide = aSide;
         TransactTime fTransactTime = new TransactTime(new Date());
-        OrderQty fOrderQty = new OrderQty(500.0);
-        OrdType fOrdType = new OrdType(OrdType.LIMIT);
+        OrderQty fOrderQty = aOrderQty;
+        OrdType fOrdType = aOrdType;
         Price fPrice = new Price(3.95);
         StopPx fStopPx = new StopPx(3.50);
-        TimeInForce fTimeInForce = new TimeInForce(TimeInForce.DAY);
+        TimeInForce fTimeInForce = aTimeInForce;
 
 
         message.set(fClOrdID);
@@ -142,12 +240,12 @@ public class OEMSRunner {
         return message;
     }
 
-    public OrderStatusRequest createOrderStatusRequest() {
+    public OrderStatusRequest createOrderStatusRequest(ClOrdID aClOrdID, Symbol aSymbol, Side aSide) {
         OrderStatusRequest message = new OrderStatusRequest();
 
-        ClOrdID clOrdID = new ClOrdID("esref");
-        Symbol symbol = new Symbol("esref");
-        Side side = new Side(Side.BUY);
+        ClOrdID clOrdID = aClOrdID;
+        Symbol symbol = aSymbol;
+        Side side = aSide;
 
         message.set(clOrdID);
         message.set(symbol);
@@ -156,13 +254,13 @@ public class OEMSRunner {
         return message;
     }
 
-    public OrderCancelRequest createOrderCancelRequest() {
+    public OrderCancelRequest createOrderCancelRequest(OrigClOrdID aOrigClOrdID, ClOrdID aClOrdID, Symbol aSymbol, Side aSide) {
         OrderCancelRequest message = new OrderCancelRequest();
 
-        OrigClOrdID origClOrdID = new OrigClOrdID("esref");
-        ClOrdID clOrdID = new ClOrdID("esref");
-        Symbol symbol = new Symbol("esref");
-        Side side = new Side(Side.BUY);
+        OrigClOrdID origClOrdID = aOrigClOrdID;
+        ClOrdID clOrdID = aClOrdID;
+        Symbol symbol = aSymbol;
+        Side side = aSide;
         TransactTime transactTime = new TransactTime(new Date());
 
         message.set(origClOrdID);
@@ -175,15 +273,15 @@ public class OEMSRunner {
         return message;
     }
 
-    public OrderCancelReplaceRequest createOrderCancelReplaceRequest() {
+    public OrderCancelReplaceRequest createOrderCancelReplaceRequest(OrigClOrdID aOrigClOrdID, ClOrdID aClOrdID, Symbol aSymbol, Side aSide) {
 
         OrderCancelReplaceRequest message = new OrderCancelReplaceRequest();
 
-        OrigClOrdID origClOrdID = new OrigClOrdID("esref");
-        ClOrdID clOrdID = new ClOrdID("esref");
+        OrigClOrdID origClOrdID = aOrigClOrdID;
+        ClOrdID clOrdID = aClOrdID;
         HandlInst handlInst = new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PUBLIC);
-        Symbol symbol = new Symbol("esref");
-        Side side = new Side(Side.BUY);
+        Symbol symbol = aSymbol;
+        Side side = aSide;
         TransactTime transactTime = new TransactTime(new Date());
         OrdType ordType = new OrdType(OrdType.LIMIT);
 

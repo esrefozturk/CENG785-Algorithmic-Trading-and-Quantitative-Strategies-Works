@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /**
  * Created by esrefozturk on 12/11/2016.
@@ -36,15 +38,27 @@ public class RealFrame extends JFrame {
         ordTypeComboBox.addItem(new OrdTypeComboItem(OrdType.LIMIT));
 
 
+        final JTextField symbolTextField = new JTextField("Symbol");
+        symbolTextField.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) {
+                symbolTextField.setText("");
+            }
+
+            public void focusLost(FocusEvent e) {
+
+            }
+        });
+
+
         JButton marketDataRequestButton = new JButton("Market Data Request");
         marketDataRequestButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                oemsRunner.sendMarketDataRequest();
+                //oemsRunner.sendMarketDataRequest();
 
-                char side = ((SideComboItem)sideJComboBox.getSelectedItem()).value;
-                char timeInForce = ((TimeInForceComboItem)timeInForceComboBox.getSelectedItem()).value;
-                char ordType = ((OrdTypeComboItem)ordTypeComboBox.getSelectedItem()).value;
+                char side = ((SideComboItem) sideJComboBox.getSelectedItem()).value;
+                char timeInForce = ((TimeInForceComboItem) timeInForceComboBox.getSelectedItem()).value;
+                char ordType = ((OrdTypeComboItem) ordTypeComboBox.getSelectedItem()).value;
 
                 System.out.println(side + " " + timeInForce + " " + ordType);
 
@@ -56,7 +70,7 @@ public class RealFrame extends JFrame {
         newOrderSingleButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                oemsRunner.sendNewOrderSingle();
+                //oemsRunner.sendNewOrderSingle();
             }
         });
 
@@ -64,7 +78,7 @@ public class RealFrame extends JFrame {
         orderStatusRequestButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                oemsRunner.sendOrderStatusRequest();
+                //oemsRunner.sendOrderStatusRequest();
             }
         });
 
@@ -72,7 +86,7 @@ public class RealFrame extends JFrame {
         orderCancelRequestButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                oemsRunner.sendOrderCancelRequest();
+                //oemsRunner.sendOrderCancelRequest();
             }
         });
 
@@ -80,7 +94,7 @@ public class RealFrame extends JFrame {
         orderCancelReplaceRequestButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                oemsRunner.sendOrderCancelReplaceRequest();
+                //oemsRunner.sendOrderCancelReplaceRequest();
             }
         });
 
@@ -94,6 +108,8 @@ public class RealFrame extends JFrame {
         add(sideJComboBox);
         add(timeInForceComboBox);
         add(ordTypeComboBox);
+
+        add(symbolTextField);
 
 
         setVisible(true);
