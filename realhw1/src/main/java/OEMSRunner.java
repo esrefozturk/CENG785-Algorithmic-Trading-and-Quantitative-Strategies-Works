@@ -4,6 +4,7 @@ import quickfix.field.*;
 import quickfix.fix42.*;
 
 import java.util.Date;
+import java.util.Scanner;
 import java.util.TimeZone;
 
 /**
@@ -47,8 +48,6 @@ public class OEMSRunner {
         }
 
 
-        /*
-
         String prompt = "FIXME> ";
         String line;
         String[] args;
@@ -59,16 +58,15 @@ public class OEMSRunner {
         OrderQty aOrderQty;
 
 
-        while(true){
+        while (true) {
             System.out.print(prompt);
             Scanner reader = new Scanner(System.in);
             line = reader.nextLine();
             args = line.split(" ");
-            if( args[0] == "exit" ){
+            if (args[0].equals("exit")) {
                 System.out.println("BYE");
                 break;
-            }
-            else if(args[0] == "help"){
+            } else if (args[0].equals("help")) {
                 System.out.println("TopOfBook <Symbol>");
                 System.out.println("DepthOfBook <Symbol> <Depth>");
                 System.out.println("MarketOrder <Symbol> <Side> <TimeInForce> <Quantity>");
@@ -77,77 +75,55 @@ public class OEMSRunner {
                 System.out.println("Cancel <OrigId> <Id> <Symbol> <Side>");
                 System.out.println("MarketReplace <OrigId> <Id> <Symbol> <Side>");
                 System.out.println("LimitReplace <OrigId> <Id> <Symbol> <Side>");
-            }
-            else if( args[0] == "TopOfBook" ){
-                if( args.length < 3 ){
+            } else if (args[0].equals("TopOfBook")) {
+                if (args.length < 3) {
                     System.out.println("TopOfBook <Symbol>");
                 }
                 aSymbol = new Symbol(args[1]);
                 aDepth = new MarketDepth(1);
-                oemsRunner.sendMarketDataRequest(aSymbol,aDepth);
-            }
-            else if( args[0] == "DepthOfBook" ){
-                if( args.length < 3 ){
+                oemsRunner.sendMarketDataRequest(aSymbol, aDepth);
+            } else if (args[0].equals("DepthOfBook")) {
+                if (args.length < 3) {
                     System.out.println("TopOfBook <Symbol>");
                     continue;
                 }
                 aSymbol = new Symbol(args[1]);
                 aDepth = new MarketDepth(Integer.parseInt(args[2]));
-                oemsRunner.sendMarketDataRequest(aSymbol,aDepth);
-            }
-            else if( args[0] == "MarketOrder" ){
-                if( args.length < 5 ){
-                    System.out.println("TopOfBook <Symbol>");
-                }
+                oemsRunner.sendMarketDataRequest(aSymbol, aDepth);
+            } else if (args[0].equals("MarketOrder")) {
                 aSymbol = new Symbol(args[1]);
-                if(args[2] == "SELL"){
+                if (args[2].equals("SELL")) {
                     aSide = new Side(Side.SELL);
-                }
-                else if(args[2]=="BUY"){
+                } else if (args[2].equals("BUY")) {
                     aSide = new Side(Side.BUY);
-                }
-                else{
+                } else {
                     System.out.println("TopOfBook <Symbol>");
                     continue;
                 }
 
-                if( args[3] == "DAY" ){
+                if (args[3].equals("DAY")) {
                     aTimeInForce = new TimeInForce(TimeInForce.DAY);
-                }
-                else if( args[3] == "GOOD_TILL_DATE" ){
+                } else if (args[3].equals("GOOD_TILL_DATE")) {
                     aTimeInForce = new TimeInForce(TimeInForce.GOOD_TILL_DATE);
-                }
-                else if( args[3] == "FILL_OR_KILL" ){
+                } else if (args[3].equals("FILL_OR_KILL")) {
                     aTimeInForce = new TimeInForce(TimeInForce.FILL_OR_KILL);
-                }
-                else if( args[3] == "IMMEDIATE_OR_CANCEL" ){
+                } else if (args[3].equals("IMMEDIATE_OR_CANCEL")) {
                     aTimeInForce = new TimeInForce(TimeInForce.IMMEDIATE_OR_CANCEL);
-                }
-                else{
+                } else {
                     System.out.println("TopOfBook <Symbol>");
                     continue;
                 }
 
-                aOrderQty = new OrderQty(Integer.parseInt(args[3]));
+                aOrderQty = new OrderQty(Integer.parseInt(args[4]));
 
-
-                oemsRunner.sendNewOrderSingle(new OrdType(OrdType.MARKET),aSymbol,aSide,aTimeInForce,aOrderQty);
+                oemsRunner.sendNewOrderSingle(new OrdType(OrdType.MARKET), aSymbol, aSide, aTimeInForce, aOrderQty);
             }
-            else if( args[0] == "Status" ){
-                oemsRunner.sendMarketDataRequest(args[1],Integer.parseInt(args[2]));
-            }
-            else if( args[0] == "Cancel" ){
-                oemsRunner.sendMarketDataRequest(args[1],Integer.parseInt(args[2]));
-            }
-            else if( args[0] == "Replace" ){
-                oemsRunner.sendMarketDataRequest(args[1],Integer.parseInt(args[2]));
-            }
-
 
 
         }
 
-        */
+        oemsRunner.session.logout();
+        oemsRunner.stop();
 
 
     }
@@ -157,6 +133,7 @@ public class OEMSRunner {
     }
 
     public void sendNewOrderSingle(OrdType aOrdType, Symbol aSymbol, Side aSide, TimeInForce aTimeInForce, OrderQty aOrderQty) {
+
         this.session.send(this.createNewOrderSingle(aOrdType, aSymbol, aSide, aTimeInForce, aOrderQty));
     }
 
