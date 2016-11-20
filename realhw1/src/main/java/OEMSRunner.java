@@ -3,7 +3,10 @@ import quickfix.MessageFactory;
 import quickfix.field.*;
 import quickfix.fix42.*;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.TimeZone;
 
 /**
  * Created by esrefozturk on 05/11/2016.
@@ -31,11 +34,7 @@ public class OEMSRunner {
 
     public static void main(String[] argz) throws Exception {
 
-        HashMap<Integer,Order> orders = new HashMap<Integer, Order>();
-
-
-
-
+        HashMap<String, Order> orders = new HashMap<String, Order>();
 
         TimeZone.setDefault(TimeZone.getTimeZone("Turkey"));
 
@@ -45,13 +44,11 @@ public class OEMSRunner {
 
         oemsRunner.session.logon();
 
-        RealFrame realFrame = new RealFrame(oemsRunner,orders);
 
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
         }
-
 
 
         String prompt = "FIXME> ";
@@ -62,10 +59,6 @@ public class OEMSRunner {
         Side aSide;
         TimeInForce aTimeInForce;
         OrderQty aOrderQty;
-
-        oemsRunner.sendTWAPOrder(new OrdType(OrdType.MARKET),
-                new Symbol("IBM"), new Side(Side.SELL), new TimeInForce(TimeInForce.IMMEDIATE_OR_CANCEL),
-                new OrderQty(1), 5, 10);
 
         while (true) {
             System.out.print(prompt);
@@ -78,12 +71,10 @@ public class OEMSRunner {
             } else if (args[0].equals("help")) {
                 System.out.println("TopOfBook <Symbol>");
                 System.out.println("DepthOfBook <Symbol> <Depth>");
-                System.out.println("MarketOrder <Symbol> <Side> <TimeInForce> <Quantity>");
-                System.out.println("LimitOrder <Symbol> <Side> <TimeInForce> <Quantity> <Price>");
+                System.out.println("Order <Type> <Symbol> <Side> <TimeInForce> <Quantity> <Price>");
                 System.out.println("Status <Id> <Symbol> <Side>");
                 System.out.println("Cancel <OrigId> <Id> <Symbol> <Side>");
-                System.out.println("MarketReplace <OrigId> <Id> <Symbol> <Side>");
-                System.out.println("LimitReplace <OrigId> <Id> <Symbol> <Side>");
+                System.out.println("Replace <Type> <OrigId> <Id> <Symbol> <Side>");
             } else if (args[0].equals("TopOfBook")) {
                 if (args.length < 3) {
                     System.out.println("TopOfBook <Symbol>");
@@ -99,37 +90,39 @@ public class OEMSRunner {
                 aSymbol = new Symbol(args[1]);
                 aDepth = new MarketDepth(Integer.parseInt(args[2]));
                 oemsRunner.sendMarketDataRequest(aSymbol, aDepth);
-            } else if (args[0].equals("MarketOrder")) {
-                aSymbol = new Symbol(args[1]);
-                if (args[2].equals("SELL")) {
-                    aSide = new Side(Side.SELL);
-                } else if (args[2].equals("BUY")) {
-                    aSide = new Side(Side.BUY);
-                } else {
-                    System.out.println("TopOfBook <Symbol>");
-                    continue;
+            } else if (args[0].equals("Order")) {
+
+                try {
+                    Order order = new Order(args[1], args[2], args[3], args[4], Double.parseDouble(args[5]), Double.parseDouble(args[6]));
+                    oemsRunner.sendNewOrderSingle(order.ordType, order.symbol, order.side, order.orderQty, order.timeInForce, order.price);
+
+                    orders.put(order.clOrdID.getValue().toString(), order);
+                } catch (Exception e) {
+                    System.out.println("Order <Type> <Symbol> <Side> <TimeInForce> <Quantity> <Price>");
                 }
+                // Order MARKET IBM SELL GOOD_TILL_DATE 1 1
 
-                if (args[3].equals("DAY")) {
-                    aTimeInForce = new TimeInForce(TimeInForce.DAY);
-                } else if (args[3].equals("GOOD_TILL_DATE")) {
-                    aTimeInForce = new TimeInForce(TimeInForce.GOOD_TILL_DATE);
-                } else if (args[3].equals("FILL_OR_KILL")) {
-                    aTimeInForce = new TimeInForce(TimeInForce.FILL_OR_KILL);
-                } else if (args[3].equals("IMMEDIATE_OR_CANCEL")) {
-                    aTimeInForce = new TimeInForce(TimeInForce.IMMEDIATE_OR_CANCEL);
-                } else {
-                    System.out.println("TopOfBook <Symbol>");
-                    continue;
+
+            } else if (args[0].equals("List")) {
+                for (int i = 0; i < orders.size(); i++) {
+                    Order order = orders.get((new Integer(i + 1)).toString());
+                    System.out.println(order.clOrdID.getValue() + " " + order.symbol.getValue() + " " + order.side.getValue());
                 }
+            } else if (args[0].equals("TWAP")) {
+                try {
+                    Order order = new Order(args[1], args[2], args[3], args[4], Double.parseDouble(args[5]), Double.parseDouble(args[6]));
+                    oemsRunner.sendNewOrderSingle(order.ordType, order.symbol, order.side, order.orderQty, order.timeInForce, order.price);
 
-                aOrderQty = new OrderQty(Integer.parseInt(args[4]));
-
-                oemsRunner.sendNewOrderSingle(new OrdType(OrdType.MARKET), aSymbol, aSide, aTimeInForce, aOrderQty);
+                    orders.put(order.clOrdID.getValue().toString(), order);
+                    oemsRunner.sendTWAPOrder(orders, order.ordType, order.symbol, order.side, order.orderQty, order.timeInForce, order.price, Long.parseLong(args[7]), Integer.parseInt(args[8]));
+                } catch (Exception e) {
+                    System.out.println("Order <Type> <Symbol> <Side> <TimeInForce> <Quantity> <Price> <Interval> <Count>");
+                }
             }
 
 
         }
+
 
         oemsRunner.session.logout();
         oemsRunner.stop();
@@ -141,9 +134,9 @@ public class OEMSRunner {
         this.session.send(this.createMarketDataRequest(aSymbol, aDepth));
     }
 
-    public void sendNewOrderSingle(OrdType aOrdType, Symbol aSymbol, Side aSide, TimeInForce aTimeInForce, OrderQty aOrderQty) {
+    public void sendNewOrderSingle(OrdType aOrdType, Symbol aSymbol, Side aSide, OrderQty aOrderQty, TimeInForce aTimeInForce, Price aPrice) {
 
-        this.session.send(this.createNewOrderSingle(aOrdType, aSymbol, aSide, aTimeInForce, aOrderQty));
+        this.session.send(this.createNewOrderSingle(aOrdType, aSymbol, aSide, aOrderQty, aTimeInForce, aPrice));
     }
 
     public void sendOrderStatusRequest(ClOrdID aClOrdID, Symbol aSymbol, Side aSide) {
@@ -198,7 +191,7 @@ public class OEMSRunner {
 
     }
 
-    public NewOrderSingle createNewOrderSingle(OrdType aOrdType, Symbol aSymbol, Side aSide, TimeInForce aTimeInForce, OrderQty aOrderQty) {
+    public NewOrderSingle createNewOrderSingle(OrdType aOrdType, Symbol aSymbol, Side aSide, OrderQty aOrderQty, TimeInForce aTimeInForce, Price aPrice) {
         NewOrderSingle message = new NewOrderSingle();
 
         ClOrdID fClOrdID = new ClOrdID("OEMS-Order0001-30.10.2015-13:59:00");
@@ -208,7 +201,7 @@ public class OEMSRunner {
         TransactTime fTransactTime = new TransactTime(new Date());
         OrderQty fOrderQty = aOrderQty;
         OrdType fOrdType = aOrdType;
-        Price fPrice = new Price(3.95);
+        Price fPrice = aPrice;
         StopPx fStopPx = new StopPx(3.50);
         TimeInForce fTimeInForce = aTimeInForce;
 
@@ -283,7 +276,7 @@ public class OEMSRunner {
         return message;
     }
 
-    public void sendTWAPOrder(final OrdType aOrdType, final Symbol aSymbol, final Side aSide, final TimeInForce aTimeInForce, final OrderQty aOrderQty, final long interval, final int count) {
+    public void sendTWAPOrder(HashMap<String, Order> orders, final OrdType aOrdType, final Symbol aSymbol, final Side aSide, final OrderQty aOrderQty, final TimeInForce aTimeInForce, Price aPrice, final long interval, final int count) {
         for (int i = 0; i < count; i++) {
             final int j = i;
             new Thread(new Runnable() {
@@ -293,7 +286,10 @@ public class OEMSRunner {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    sendNewOrderSingle(aOrdType, aSymbol, aSide, aTimeInForce, aOrderQty);
+                    Order order = new Order(aOrdType, aSymbol, aSide, aTimeInForce, aOrderQty, aPrice);
+                    sendNewOrderSingle(order.ordType, order.symbol, order.side, order.orderQty, order.timeInForce, order.price);
+
+                    orders.put(order.clOrdID.getValue().toString(), order);
 
                 }
             }).start();

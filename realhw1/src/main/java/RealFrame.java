@@ -8,14 +8,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.HashMap;
 
 /**
  * Created by esrefozturk on 12/11/2016.
  */
 public class RealFrame extends JFrame {
 
-    public RealFrame(OEMSRunner aoemsRunner, HashMap<Integer,Order> orders) {
+    public RealFrame(OEMSRunner aoemsRunner) {
         final OEMSRunner oemsRunner = aoemsRunner;
         setSize(1280, 960);
         setLayout(new FlowLayout());
@@ -50,6 +49,17 @@ public class RealFrame extends JFrame {
             }
         });
 
+        final JTextField priceTextField = new JTextField("Price");
+        symbolTextField.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) {
+                symbolTextField.setText("");
+            }
+
+            public void focusLost(FocusEvent e) {
+
+            }
+        });
+
 
         JButton marketDataRequestButton = new JButton("Market Data Request");
         marketDataRequestButton.addActionListener(new ActionListener() {
@@ -67,14 +77,8 @@ public class RealFrame extends JFrame {
             }
         });
 
-        JButton newOrderSingleButton = new JButton("Market Data Request");
-        newOrderSingleButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
 
-                //oemsRunner.sendNewOrderSingle();
-            }
-        });
-
+ /*
         JButton orderStatusRequestButton = new JButton("Market Data Request");
         orderStatusRequestButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -82,6 +86,8 @@ public class RealFrame extends JFrame {
                 //oemsRunner.sendOrderStatusRequest();
             }
         });
+
+
 
         JButton orderCancelRequestButton = new JButton("Market Data Request");
         orderCancelRequestButton.addActionListener(new ActionListener() {
@@ -98,16 +104,23 @@ public class RealFrame extends JFrame {
                 //oemsRunner.sendOrderCancelReplaceRequest();
             }
         });
-
-        OrderPanel orderPanel = new OrderPanel(orders);
-
+ */
 
 
-        add(marketDataRequestButton);
-        add(newOrderSingleButton);
-        add(orderStatusRequestButton);
-        add(orderCancelRequestButton);
-        add(orderCancelReplaceRequestButton);
+        JButton newOrderSingleButton = new JButton("Order");
+        newOrderSingleButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                //oemsRunner.sendNewOrderSingle();
+            }
+        });
+
+
+        //add(marketDataRequestButton);
+
+        //add(orderStatusRequestButton);
+        //add(orderCancelRequestButton);
+        //add(orderCancelReplaceRequestButton);
 
         add(sideJComboBox);
         add(timeInForceComboBox);
@@ -115,7 +128,7 @@ public class RealFrame extends JFrame {
 
         add(symbolTextField);
 
-        add(orderPanel);
+        add(newOrderSingleButton);
 
 
         setVisible(true);
