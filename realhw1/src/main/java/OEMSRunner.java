@@ -3,9 +3,7 @@ import quickfix.MessageFactory;
 import quickfix.field.*;
 import quickfix.fix42.*;
 
-import java.util.Date;
-import java.util.Scanner;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * Created by esrefozturk on 05/11/2016.
@@ -33,6 +31,11 @@ public class OEMSRunner {
 
     public static void main(String[] argz) throws Exception {
 
+        HashMap<Integer,Order> orders = new HashMap<Integer, Order>();
+
+
+
+
 
         TimeZone.setDefault(TimeZone.getTimeZone("Turkey"));
 
@@ -42,10 +45,13 @@ public class OEMSRunner {
 
         oemsRunner.session.logon();
 
+        RealFrame realFrame = new RealFrame(oemsRunner,orders);
+
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
         }
+
 
 
         String prompt = "FIXME> ";
@@ -61,7 +67,7 @@ public class OEMSRunner {
                 new Symbol("IBM"), new Side(Side.SELL), new TimeInForce(TimeInForce.IMMEDIATE_OR_CANCEL),
                 new OrderQty(1), 5, 10);
 
-            while (true) {
+        while (true) {
             System.out.print(prompt);
             Scanner reader = new Scanner(System.in);
             line = reader.nextLine();
@@ -287,7 +293,7 @@ public class OEMSRunner {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    sendNewOrderSingle(aOrdType,aSymbol,aSide,aTimeInForce,aOrderQty);
+                    sendNewOrderSingle(aOrdType, aSymbol, aSide, aTimeInForce, aOrderQty);
 
                 }
             }).start();

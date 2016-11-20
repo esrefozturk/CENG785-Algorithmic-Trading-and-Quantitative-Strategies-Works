@@ -8,15 +8,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.HashMap;
 
 /**
  * Created by esrefozturk on 12/11/2016.
  */
 public class RealFrame extends JFrame {
 
-    public RealFrame(OEMSRunner aoemsRunner) {
+    public RealFrame(OEMSRunner aoemsRunner, HashMap<Integer,Order> orders) {
         final OEMSRunner oemsRunner = aoemsRunner;
-        setSize(600, 400);
+        setSize(1280, 960);
         setLayout(new FlowLayout());
 
 
@@ -98,6 +99,9 @@ public class RealFrame extends JFrame {
             }
         });
 
+        OrderPanel orderPanel = new OrderPanel(orders);
+
+
 
         add(marketDataRequestButton);
         add(newOrderSingleButton);
@@ -110,6 +114,8 @@ public class RealFrame extends JFrame {
         add(ordTypeComboBox);
 
         add(symbolTextField);
+
+        add(orderPanel);
 
 
         setVisible(true);
