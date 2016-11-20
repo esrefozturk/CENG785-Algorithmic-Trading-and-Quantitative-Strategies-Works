@@ -3,10 +3,7 @@ import quickfix.MessageFactory;
 import quickfix.field.*;
 import quickfix.fix42.*;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Scanner;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * Created by esrefozturk on 05/11/2016.
@@ -23,8 +20,12 @@ public class OEMSRunner {
     public Session session;
 
 
-    public OEMSRunner(String settingsFileName) throws Exception {
-        oems = new OEMSApplication("OEMS");
+    public OEMSRunner(String settingsFileName,
+                      ArrayList<MarketDataSnapshotFullRefresh> marketDataSnapshotFullRefreshes,
+                      ArrayList<ExecutionReport> executionReports,
+                      ArrayList<DontKnowTrade> dontKnowTrades,
+                      ArrayList<OrderCancelReject> orderCancelRejects) throws Exception {
+        oems = new OEMSApplication("OEMS",marketDataSnapshotFullRefreshes,executionReports,dontKnowTrades,orderCancelRejects);
         oemsSettings = new SessionSettings(settingsFileName);
         oemsMessageFactory = new DefaultMessageFactory();
         oemsFileLogFactory = new FileLogFactory(oemsSettings);
@@ -35,10 +36,14 @@ public class OEMSRunner {
     public static void main(String[] argz) throws Exception {
 
         HashMap<String, Order> orders = new HashMap<String, Order>();
+        ArrayList<MarketDataSnapshotFullRefresh> marketDataSnapshotFullRefreshes = new ArrayList<MarketDataSnapshotFullRefresh>();
+        ArrayList<ExecutionReport> executionReports = new ArrayList<ExecutionReport>();
+        ArrayList<DontKnowTrade> dontKnowTrades = new ArrayList<DontKnowTrade>();
+        ArrayList<OrderCancelReject> orderCancelRejects = new ArrayList<OrderCancelReject>();
 
         TimeZone.setDefault(TimeZone.getTimeZone("Turkey"));
 
-        OEMSRunner oemsRunner = new OEMSRunner("OEMSSettings.txt");
+        OEMSRunner oemsRunner = new OEMSRunner("OEMSSettings.txt",marketDataSnapshotFullRefreshes,executionReports,dontKnowTrades,orderCancelRejects);
 
         oemsRunner.start();
 
@@ -75,6 +80,8 @@ public class OEMSRunner {
                 System.out.println("Status <Id>");
                 System.out.println("Cancel <OrigId> <Symbol> <Side>");
                 System.out.println("Replace <OrigId> <Type> <Symbol> <Side> <TimeInForce> <Quantity> <Price>");
+                System.out.println("Incomings");
+
             } else if (args[0].equals("TopOfBook")) {
                 try {
                     aSymbol = new Symbol(args[1]);
@@ -158,6 +165,29 @@ public class OEMSRunner {
                 } catch (Exception e) {
                     System.out.println("Invalid request");
                 }
+            }
+            else if(args[0].equals("Incomings")){
+                while( marketDataSnapshotFullRefreshes.size() > 0 ){
+                    System.out.println("MarketDataSnapshotFullRefresh:\n");
+                    System.out.println(marketDataSnapshotFullRefreshes.get(0));
+                    marketDataSnapshotFullRefreshes.remove(0);
+                }
+                while( executionReports.size() > 0 ){
+                    System.out.println("executionReport:\n");
+                    System.out.println(executionReports.get(0));
+                    executionReports.remove(0);
+                }
+                while( dontKnowTrades.size() > 0 ){
+                    System.out.println("DontKnowTrade:\n");
+                    System.out.println(dontKnowTrades.get(0));
+                    dontKnowTrades.remove(0);
+                }
+                while( orderCancelRejects.size() > 0 ){
+                    System.out.println("OrderCancelReject:\n");
+                    System.out.println(orderCancelRejects.get(0));
+                    orderCancelRejects.remove(0);
+                }
+
             }
 
 
