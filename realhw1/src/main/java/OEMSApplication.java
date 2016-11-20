@@ -1,8 +1,7 @@
 import quickfix.*;
-import quickfix.fix42.DontKnowTrade;
-import quickfix.fix42.ExecutionReport;
-import quickfix.fix42.MarketDataSnapshotFullRefresh;
-import quickfix.fix42.OrderCancelReject;
+import quickfix.Message;
+import quickfix.fix42.*;
+import quickfix.fix42.MessageCracker;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -10,7 +9,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by esrefozturk on 05/11/2016.
  */
-public class OEMSApplication implements Application {
+public class OEMSApplication extends MessageCracker implements Application {
 
     public String name;
     ArrayList<MarketDataSnapshotFullRefresh> marketDataSnapshotFullRefreshes = null;
@@ -74,6 +73,7 @@ public class OEMSApplication implements Application {
         //System.out.println(name + " : fromApp");
         //System.out.println("  SessionID : " + sessionId);
         //System.out.println("  Message   : " + message);
+        crack( message , sessionId ) ;
     }
 
     public void onMessage(MarketDataSnapshotFullRefresh marketDataSnapshotFullRefresh, SessionID sessionId) throws FieldNotFound {

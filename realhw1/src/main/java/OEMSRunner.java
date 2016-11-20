@@ -170,21 +170,25 @@ public class OEMSRunner {
                 while( marketDataSnapshotFullRefreshes.size() > 0 ){
                     System.out.println("MarketDataSnapshotFullRefresh:\n");
                     System.out.println(marketDataSnapshotFullRefreshes.get(0));
+                    System.out.println();
                     marketDataSnapshotFullRefreshes.remove(0);
                 }
                 while( executionReports.size() > 0 ){
                     System.out.println("executionReport:\n");
                     System.out.println(executionReports.get(0));
+                    System.out.println();
                     executionReports.remove(0);
                 }
                 while( dontKnowTrades.size() > 0 ){
                     System.out.println("DontKnowTrade:\n");
                     System.out.println(dontKnowTrades.get(0));
+                    System.out.println();
                     dontKnowTrades.remove(0);
                 }
                 while( orderCancelRejects.size() > 0 ){
                     System.out.println("OrderCancelReject:\n");
                     System.out.println(orderCancelRejects.get(0));
+                    System.out.println();
                     orderCancelRejects.remove(0);
                 }
 
