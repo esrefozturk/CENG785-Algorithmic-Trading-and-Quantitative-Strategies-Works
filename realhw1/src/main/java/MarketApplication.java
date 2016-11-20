@@ -62,7 +62,7 @@ public class MarketApplication extends MessageCracker implements Application {
         System.out.println(name + " : fromApp");
         System.out.println("  SessionID : " + sessionId);
         System.out.println("  Message   : " + message);
-
+        crack(message, sessionId);
 
     }
 

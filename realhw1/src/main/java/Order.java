@@ -5,13 +5,14 @@ import quickfix.field.*;
  */
 public class Order {
     public static int CURRENT_ID = 1;
-    public ClOrdID clOrdID;
-    public OrdType ordType;
-    public Symbol symbol;
-    public Side side;
-    public OrderQty orderQty;
-    public TimeInForce timeInForce;
-    public Price price;
+    public ClOrdID clOrdID = null;
+    public OrdType ordType = null;
+    public Symbol symbol = null;
+    public Side side = null;
+    public OrderQty orderQty = null;
+    public TimeInForce timeInForce = null;
+    public Price price = null;
+    public OrigClOrdID cancelID = null;
 
 
     public Order(OrdType ordType, Symbol symbol, Side side, TimeInForce timeInForce, OrderQty orderQty, Price price) {
@@ -58,6 +59,11 @@ public class Order {
         this.orderQty = new OrderQty(orderQty);
         this.price = new Price(price);
 
+        this.clOrdID = new ClOrdID((new Integer(CURRENT_ID++)).toString());
+    }
+
+    public Order(String cancelID) {
+        this.cancelID = new OrigClOrdID(cancelID);
         this.clOrdID = new ClOrdID((new Integer(CURRENT_ID++)).toString());
     }
 
