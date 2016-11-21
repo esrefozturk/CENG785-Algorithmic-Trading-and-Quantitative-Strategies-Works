@@ -4,3 +4,5 @@
 *.jar
 Log
 Store
+target
+*.zip
