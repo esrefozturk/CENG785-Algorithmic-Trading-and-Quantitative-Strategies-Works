@@ -25,7 +25,7 @@ public class OEMSRunner {
                       ArrayList<ExecutionReport> executionReports,
                       ArrayList<DontKnowTrade> dontKnowTrades,
                       ArrayList<OrderCancelReject> orderCancelRejects) throws Exception {
-        oems = new OEMSApplication("OEMS",marketDataSnapshotFullRefreshes,executionReports,dontKnowTrades,orderCancelRejects);
+        oems = new OEMSApplication("OEMS", marketDataSnapshotFullRefreshes, executionReports, dontKnowTrades, orderCancelRejects);
         oemsSettings = new SessionSettings(settingsFileName);
         oemsMessageFactory = new DefaultMessageFactory();
         oemsFileLogFactory = new FileLogFactory(oemsSettings);
@@ -43,7 +43,7 @@ public class OEMSRunner {
 
         TimeZone.setDefault(TimeZone.getTimeZone("Turkey"));
 
-        OEMSRunner oemsRunner = new OEMSRunner("OEMSSettings.txt",marketDataSnapshotFullRefreshes,executionReports,dontKnowTrades,orderCancelRejects);
+        OEMSRunner oemsRunner = new OEMSRunner("OEMSSettings.txt", marketDataSnapshotFullRefreshes, executionReports, dontKnowTrades, orderCancelRejects);
 
         oemsRunner.start();
 
@@ -70,17 +70,21 @@ public class OEMSRunner {
             Scanner reader = new Scanner(System.in);
             line = reader.nextLine();
             args = line.split(" ");
-            if (args[0].equals("exit")) {
+            if (args[0].equals("Exit")) {
                 System.out.println("BYE");
                 break;
             } else if (args[0].equals("help")) {
-                System.out.println("TopOfBook <Symbol>");
-                System.out.println("DepthOfBook <Symbol> <Depth>");
-                System.out.println("Order <Type> <Symbol> <Side> <TimeInForce> <Quantity> <Price>");
-                System.out.println("Status <Id>");
-                System.out.println("Cancel <OrigId> <Symbol> <Side>");
-                System.out.println("Replace <OrigId> <Type> <Symbol> <Side> <TimeInForce> <Quantity> <Price>");
-                System.out.println("Incomings");
+                System.out.println("Commands:");
+                System.out.println("\t\t\tTopOfBook <Symbol>");
+                System.out.println("\t\t\tDepthOfBook <Symbol> <Depth>");
+                System.out.println("\t\t\tOrder <Type> <Symbol> <Side> <TimeInForce> <Quantity> <Price>");
+                System.out.println("\t\t\tStatus <Id>");
+                System.out.println("\t\t\tCancel <OrigId> <Symbol> <Side>");
+                System.out.println("\t\t\tReplace <OrigId> <Type> <Symbol> <Side> <TimeInForce> <Quantity> <Price>");
+                System.out.println("\t\t\tTWAP <Type> <Symbol> <Side> <TimeInForce> <Quantity> <Price> <Interval> <Count>");
+                System.out.println("\t\t\tIncomings");
+                System.out.println("\t\t\tExit");
+
 
             } else if (args[0].equals("TopOfBook")) {
                 try {
@@ -118,10 +122,31 @@ public class OEMSRunner {
                     if (order.cancelID != null) {
                         System.out.print("Cancel/Replace ID: " + order.cancelID.getValue() + ",");
                     } else {
-                        System.out.print("Type: " + order.ordType.getValue() + ",");
+                        if (order.ordType.getValue() == OrdType.MARKET) {
+                            System.out.print("Type: MARKET,");
+                        } else if (order.ordType.getValue() == OrdType.LIMIT) {
+                            System.out.print("Type: LIMIT,");
+                        }
+
                         System.out.print("Symbol: " + order.symbol.getValue() + ",");
-                        System.out.print("Side: " + order.side.getValue() + ",");
-                        System.out.print("Time In Force: " + order.timeInForce.getValue() + ",");
+
+                        if (order.side.getValue() == Side.SELL) {
+                            System.out.print("Side: SELL,");
+                        } else if (order.side.getValue() == Side.BUY) {
+                            System.out.print("Side: BUY,");
+                        }
+
+                        if (order.timeInForce.getValue() == TimeInForce.DAY) {
+                            System.out.print("Time In Force: DAY,");
+                        } else if (order.timeInForce.getValue() == TimeInForce.GOOD_TILL_DATE) {
+                            System.out.print("Time In Force: GOOD_TILL_DATE,");
+                        } else if (order.timeInForce.getValue() == TimeInForce.FILL_OR_KILL) {
+                            System.out.print("Time In Force: FILL_OR_KILL,");
+                        } else if (order.timeInForce.getValue() == TimeInForce.IMMEDIATE_OR_CANCEL) {
+                            System.out.print("Time In Force: IMMEDIATE_OR_CANCEL,");
+                        }
+
+
                         System.out.print("Quantity: " + order.orderQty.getValue() + ",");
                         System.out.print("Price: " + order.price.getValue() + ",");
                     }
@@ -133,7 +158,7 @@ public class OEMSRunner {
                     Order order = new Order(args[1], args[2], args[3], args[4], Double.parseDouble(args[5]), Double.parseDouble(args[6]));
                     oemsRunner.sendNewOrderSingle(order);
                     orders.put(order.clOrdID.getValue().toString(), order);
-                    oemsRunner.sendTWAPOrder(orders, order, Long.parseLong(args[7]), Integer.parseInt(args[8]));
+                    oemsRunner.sendTWAPOrder(orders, order, Long.parseLong(args[7]), Integer.parseInt(args[8]) - 1);
                 } catch (Exception e) {
                     System.out.println("Invalid request");
                 }
@@ -165,30 +190,61 @@ public class OEMSRunner {
                 } catch (Exception e) {
                     System.out.println("Invalid request");
                 }
-            }
-            else if(args[0].equals("Incomings")){
-                while( marketDataSnapshotFullRefreshes.size() > 0 ){
+            } else if (args[0].equals("Incomings")) {
+
+                while (marketDataSnapshotFullRefreshes.size() > 0) {
+
                     System.out.println("MarketDataSnapshotFullRefresh:\n");
                     System.out.println(marketDataSnapshotFullRefreshes.get(0));
                     System.out.println();
                     marketDataSnapshotFullRefreshes.remove(0);
                 }
-                while( executionReports.size() > 0 ){
-                    System.out.println("executionReport:\n");
-                    System.out.println(executionReports.get(0));
-                    System.out.println();
+
+                while (executionReports.size() > 0) {
+                    ExecutionReport executionReport = executionReports.get(0);
+
+                    if (executionReport.getOrdStatus().getValue() == OrdStatus.STOPPED) {
+                        System.out.println("OrderCancelReject => Id=" + executionReport.getClOrdID().getValue() + ",Status=STOPPED");
+                    } else if (executionReport.getOrdStatus().getValue() == OrdStatus.CANCELED) {
+                        System.out.println("OrderCancelReject => Id=" + executionReport.getClOrdID().getValue() + ",Status=CANCELLED");
+                    }
+                    else if (executionReport.getOrdStatus().getValue() == OrdStatus.FILLED) {
+                        System.out.println("OrderCancelReject => Id=" + executionReport.getClOrdID().getValue() + ",Status=FILLED");
+                    }
+                    else{
+                        System.out.println("OrderCancelReject => Id=" + executionReport.getClOrdID().getValue() + ",Status=" + executionReport.getOrdStatus().getValue() );
+                    }
                     executionReports.remove(0);
                 }
+
                 while( dontKnowTrades.size() > 0 ){
+                    DontKnowTrade dontKnowTrade = dontKnowTrades.get(0);
+                    if(dontKnowTrade.getDKReason().getValue() == DKReason.NO_MATCHING_ORDER){
+                        System.out.println("DontKnowTrade: => Id=" +dontKnowTrade.getOrderID() + ",Status=NO_MATCHING_ORDER" );
+                    }else if(dontKnowTrade.getDKReason().getValue() == DKReason.UNKNOWN_SYMBOL){
+                        System.out.println("DontKnowTrade: => Id=" +dontKnowTrade.getOrderID() + ",Status=UNKNOWN_SYMBOL" );
+                    }
+                    else{
+                        System.out.println("DontKnowTrade: => Id=" +dontKnowTrade.getOrderID().getValue() + ",Status=" + dontKnowTrade.getDKReason().getValue() );
+                    }
+
                     System.out.println("DontKnowTrade:\n");
                     System.out.println(dontKnowTrades.get(0));
                     System.out.println();
                     dontKnowTrades.remove(0);
                 }
-                while( orderCancelRejects.size() > 0 ){
-                    System.out.println("OrderCancelReject:\n");
-                    System.out.println(orderCancelRejects.get(0));
-                    System.out.println();
+
+                while (orderCancelRejects.size() > 0) {
+                    OrderCancelReject orderCancelReject = orderCancelRejects.get(0);
+                    if (orderCancelReject.getOrdStatus().getValue() == OrdStatus.STOPPED) {
+                        System.out.println("OrderCancelReject => Id=" + orderCancelReject.getClOrdID().getValue() + ",Status=STOPPED");
+                    } else if (orderCancelReject.getOrdStatus().getValue() == OrdStatus.CANCELED) {
+                        System.out.println("OrderCancelReject => Id=" + orderCancelReject.getClOrdID().getValue() + ",Status=CANCELLED");
+                    }
+                    else{
+                        System.out.println("OrderCancelReject => Id=" + orderCancelReject.getClOrdID().getValue() + ",Status=" + orderCancelReject.getOrdStatus().getValue() );
+                    }
+
                     orderCancelRejects.remove(0);
                 }
 
@@ -234,7 +290,6 @@ public class OEMSRunner {
     }
 
     public void stop() {
-        System.out.println("OEMS Runner: stop");
 
         oemsSocketInitiator.stop();
     }
@@ -246,18 +301,26 @@ public class OEMSRunner {
         SubscriptionRequestType subscriptionRequestType = new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT);
         MarketDepth marketDepth = aDepth;
 
-        MarketDataRequest.NoMDEntryTypes noMDEntryTypes = new MarketDataRequest.NoMDEntryTypes();
-        MDEntryType mdEntryType = new MDEntryType(MDEntryType.BID);
+        MarketDataRequest.NoMDEntryTypes noMDEntryTypesBID = new MarketDataRequest.NoMDEntryTypes();
+        MarketDataRequest.NoMDEntryTypes noMDEntryTypesOFFER = new MarketDataRequest.NoMDEntryTypes();
+
+        MDEntryType mdEntryTypeBID = new MDEntryType(MDEntryType.BID);
+        MDEntryType mdEntryTypeOFFER = new MDEntryType(MDEntryType.OFFER);
+
+
         Symbol symbol = aSymbol;
         MarketDataRequest.NoRelatedSym noRelatedSym = new MarketDataRequest.NoRelatedSym();
         noRelatedSym.set(symbol);
 
-        noMDEntryTypes.set(mdEntryType);
+        noMDEntryTypesBID.set(mdEntryTypeBID);
+        noMDEntryTypesOFFER.set(mdEntryTypeOFFER);
+
 
         message.set(mdReqID);
         message.set(subscriptionRequestType);
         message.set(marketDepth);
-        message.addGroup(noMDEntryTypes);
+        message.addGroup(noMDEntryTypesBID);
+        message.addGroup(noMDEntryTypesOFFER);
         message.addGroup(noRelatedSym);
 
         return message;
