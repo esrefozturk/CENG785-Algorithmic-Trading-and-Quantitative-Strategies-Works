@@ -156,8 +156,6 @@ public class OEMSRunner {
             } else if (args[0].equals("TWAP")) {
                 try {
                     Order order = new Order(args[1], args[2], args[3], args[4], Double.parseDouble(args[5]), Double.parseDouble(args[6]));
-                    oemsRunner.sendNewOrderSingle(order);
-                    orders.put(order.clOrdID.getValue().toString(), order);
                     oemsRunner.sendTWAPOrder(orders, order, Long.parseLong(args[7]), Integer.parseInt(args[8]) - 1);
                 } catch (Exception e) {
                     System.out.println("Invalid request");
@@ -429,7 +427,7 @@ public class OEMSRunner {
             new Thread(new Runnable() {
                 public void run() {
                     try {
-                        Thread.sleep((j + 1) * interval * 1000);
+                        Thread.sleep(j * interval * 1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
