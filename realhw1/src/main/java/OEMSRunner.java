@@ -193,10 +193,27 @@ public class OEMSRunner {
             } else if (args[0].equals("Incomings")) {
 
                 while (marketDataSnapshotFullRefreshes.size() > 0) {
+                    MarketDataSnapshotFullRefresh marketDataSnapshotFullRefresh = marketDataSnapshotFullRefreshes.get(0);
 
-                    System.out.println("MarketDataSnapshotFullRefresh:\n");
-                    System.out.println(marketDataSnapshotFullRefreshes.get(0));
-                    System.out.println();
+                    NoMDEntries noMDEntries = new NoMDEntries();
+                    marketDataSnapshotFullRefresh.get(noMDEntries);
+                    for(int i=1;i<=noMDEntries.getValue();i++)
+                    {
+                        MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
+                        MDEntryType mdEntryType = new MDEntryType();
+                        MDEntryPx mdEntryPx = new MDEntryPx();
+                        marketDataSnapshotFullRefresh.getGroup(i, group);
+                        group.get(mdEntryType);
+                        group.get(mdEntryPx);
+                        if(mdEntryType.getValue() == MDEntryType.BID){
+                            System.out.println("MarketDataSnapshotFullRefresh => Type=BID,Price=" +mdEntryPx.getValue()  );
+                        }else if(mdEntryType.getValue() == MDEntryType.OFFER){
+                            System.out.println("MarketDataSnapshotFullRefresh => Type=OFFER,Price=" +mdEntryPx.getValue()  );
+                        }
+
+                    }
+
+
                     marketDataSnapshotFullRefreshes.remove(0);
                 }
 
@@ -228,9 +245,7 @@ public class OEMSRunner {
                         System.out.println("DontKnowTrade: => Id=" +dontKnowTrade.getOrderID().getValue() + ",Status=" + dontKnowTrade.getDKReason().getValue() );
                     }
 
-                    System.out.println("DontKnowTrade:\n");
-                    System.out.println(dontKnowTrades.get(0));
-                    System.out.println();
+
                     dontKnowTrades.remove(0);
                 }
 
