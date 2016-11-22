@@ -13,8 +13,8 @@ public class OEMSApplication extends MessageCracker implements Application {
     public String name;
     ArrayList<MarketDataSnapshotFullRefresh> marketDataSnapshotFullRefreshes = null;
     ArrayList<ExecutionReport> executionReports = null;
-    ArrayList<DontKnowTrade> dontKnowTrades= null;
-    ArrayList<OrderCancelReject> orderCancelRejects= null;
+    ArrayList<DontKnowTrade> dontKnowTrades = null;
+    ArrayList<OrderCancelReject> orderCancelRejects = null;
 
     public OEMSApplication(String aName,
                            ArrayList<MarketDataSnapshotFullRefresh> marketDataSnapshotFullRefreshes,
@@ -72,21 +72,24 @@ public class OEMSApplication extends MessageCracker implements Application {
         //System.out.println(name + " : fromApp");
         //System.out.println("  SessionID : " + sessionId);
         //System.out.println("  Message   : " + message);
-        crack( message , sessionId ) ;
+        crack(message, sessionId);
     }
 
     public void onMessage(MarketDataSnapshotFullRefresh marketDataSnapshotFullRefresh, SessionID sessionId) throws FieldNotFound {
         this.marketDataSnapshotFullRefreshes.add(marketDataSnapshotFullRefresh);
 
     }
+
     public void onMessage(ExecutionReport executionReport, SessionID sessionId) throws FieldNotFound {
         this.executionReports.add(executionReport);
 
     }
+
     public void onMessage(DontKnowTrade dontKnowTrade, SessionID sessionId) throws FieldNotFound {
         this.dontKnowTrades.add(dontKnowTrade);
 
     }
+
     public void onMessage(OrderCancelReject orderCancelReject, SessionID sessionId) throws FieldNotFound {
         this.orderCancelRejects.add(orderCancelReject);
 
