@@ -197,18 +197,17 @@ public class OEMSRunner {
 
                     NoMDEntries noMDEntries = new NoMDEntries();
                     marketDataSnapshotFullRefresh.get(noMDEntries);
-                    for(int i=1;i<=noMDEntries.getValue();i++)
-                    {
+                    for (int i = 1; i <= noMDEntries.getValue(); i++) {
                         MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
                         MDEntryType mdEntryType = new MDEntryType();
                         MDEntryPx mdEntryPx = new MDEntryPx();
                         marketDataSnapshotFullRefresh.getGroup(i, group);
                         group.get(mdEntryType);
                         group.get(mdEntryPx);
-                        if(mdEntryType.getValue() == MDEntryType.BID){
-                            System.out.println("MarketDataSnapshotFullRefresh => Type=BID,Price=" +mdEntryPx.getValue()  );
-                        }else if(mdEntryType.getValue() == MDEntryType.OFFER){
-                            System.out.println("MarketDataSnapshotFullRefresh => Type=OFFER,Price=" +mdEntryPx.getValue()  );
+                        if (mdEntryType.getValue() == MDEntryType.BID) {
+                            System.out.println("MarketDataSnapshotFullRefresh => Type=BID,Price=" + mdEntryPx.getValue());
+                        } else if (mdEntryType.getValue() == MDEntryType.OFFER) {
+                            System.out.println("MarketDataSnapshotFullRefresh => Type=OFFER,Price=" + mdEntryPx.getValue());
                         }
 
                     }
@@ -224,25 +223,22 @@ public class OEMSRunner {
                         System.out.println("OrderCancelReject => Id=" + executionReport.getClOrdID().getValue() + ",Status=STOPPED");
                     } else if (executionReport.getOrdStatus().getValue() == OrdStatus.CANCELED) {
                         System.out.println("OrderCancelReject => Id=" + executionReport.getClOrdID().getValue() + ",Status=CANCELLED");
-                    }
-                    else if (executionReport.getOrdStatus().getValue() == OrdStatus.FILLED) {
+                    } else if (executionReport.getOrdStatus().getValue() == OrdStatus.FILLED) {
                         System.out.println("OrderCancelReject => Id=" + executionReport.getClOrdID().getValue() + ",Status=FILLED");
-                    }
-                    else{
-                        System.out.println("OrderCancelReject => Id=" + executionReport.getClOrdID().getValue() + ",Status=" + executionReport.getOrdStatus().getValue() );
+                    } else {
+                        System.out.println("OrderCancelReject => Id=" + executionReport.getClOrdID().getValue() + ",Status=" + executionReport.getOrdStatus().getValue());
                     }
                     executionReports.remove(0);
                 }
 
-                while( dontKnowTrades.size() > 0 ){
+                while (dontKnowTrades.size() > 0) {
                     DontKnowTrade dontKnowTrade = dontKnowTrades.get(0);
-                    if(dontKnowTrade.getDKReason().getValue() == DKReason.NO_MATCHING_ORDER){
-                        System.out.println("DontKnowTrade: => Id=" +dontKnowTrade.getOrderID() + ",Status=NO_MATCHING_ORDER" );
-                    }else if(dontKnowTrade.getDKReason().getValue() == DKReason.UNKNOWN_SYMBOL){
-                        System.out.println("DontKnowTrade: => Id=" +dontKnowTrade.getOrderID() + ",Status=UNKNOWN_SYMBOL" );
-                    }
-                    else{
-                        System.out.println("DontKnowTrade: => Id=" +dontKnowTrade.getOrderID().getValue() + ",Status=" + dontKnowTrade.getDKReason().getValue() );
+                    if (dontKnowTrade.getDKReason().getValue() == DKReason.NO_MATCHING_ORDER) {
+                        System.out.println("DontKnowTrade: => Id=" + dontKnowTrade.getOrderID() + ",Status=NO_MATCHING_ORDER");
+                    } else if (dontKnowTrade.getDKReason().getValue() == DKReason.UNKNOWN_SYMBOL) {
+                        System.out.println("DontKnowTrade: => Id=" + dontKnowTrade.getOrderID() + ",Status=UNKNOWN_SYMBOL");
+                    } else {
+                        System.out.println("DontKnowTrade: => Id=" + dontKnowTrade.getOrderID().getValue() + ",Status=" + dontKnowTrade.getDKReason().getValue());
                     }
 
 
@@ -255,9 +251,8 @@ public class OEMSRunner {
                         System.out.println("OrderCancelReject => Id=" + orderCancelReject.getClOrdID().getValue() + ",Status=STOPPED");
                     } else if (orderCancelReject.getOrdStatus().getValue() == OrdStatus.CANCELED) {
                         System.out.println("OrderCancelReject => Id=" + orderCancelReject.getClOrdID().getValue() + ",Status=CANCELLED");
-                    }
-                    else{
-                        System.out.println("OrderCancelReject => Id=" + orderCancelReject.getClOrdID().getValue() + ",Status=" + orderCancelReject.getOrdStatus().getValue() );
+                    } else {
+                        System.out.println("OrderCancelReject => Id=" + orderCancelReject.getClOrdID().getValue() + ",Status=" + orderCancelReject.getOrdStatus().getValue());
                     }
 
                     orderCancelRejects.remove(0);
