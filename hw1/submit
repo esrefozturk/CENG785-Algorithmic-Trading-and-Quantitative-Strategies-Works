@@ -1,0 +1,9 @@
+mkdir toSubmit
+mkdir toSubmit/Docs
+mkdir toSubmit/Source
+mkdir toSubmit/OEMS
+mvn clean compile assembly:single
+cp target/hw1-1.0-jar-with-dependencies.jar toSubmit/OEMS
+cp src/main/java/OEMSApplication.java src/main/java/OEMSRunner.java src/main/java/Order.java toSubmit/Source
+cp pom.xml toSubmit/Docs
+cp OEMSSettings.txt toSubmit/Docs

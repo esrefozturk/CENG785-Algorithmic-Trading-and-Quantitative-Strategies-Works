@@ -44,34 +44,34 @@ public class OEMSApplication extends MessageCracker implements Application {
     }
 
     public void onLogout(SessionID sessionId) {
-        System.out.println(name + " : onLogout");
-        System.out.println("  SessionID : " + sessionId);
+        //System.out.println(name + " : onLogout");
+        //System.out.println("  SessionID : " + sessionId);
     }
 
     public void toAdmin(Message message, SessionID sessionId) {
-        System.out.println(name + " : toAdmin");
-        System.out.println("  SessionID : " + sessionId);
-        System.out.println("  Message   : " + message);
+        //System.out.println(name + " : toAdmin");
+        //System.out.println("  SessionID : " + sessionId);
+        //System.out.println("  Message   : " + message);
     }
 
 
     public void fromAdmin(Message message, SessionID sessionId) throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, RejectLogon {
-        System.out.println(name + " : fromAdmin");
-        System.out.println("  SessionID : " + sessionId);
-        System.out.println("  Message   : " + message);
+        //System.out.println(name + " : fromAdmin");
+        //System.out.println("  SessionID : " + sessionId);
+        //System.out.println("  Message   : " + message);
     }
 
 
     public void toApp(Message message, SessionID sessionId) throws DoNotSend {
-        System.out.println(name + " : toApp");
-        System.out.println("  SessionID : " + sessionId);
-        System.out.println("  Message   : " + message);
+        //System.out.println(name + " : toApp");
+        //System.out.println("  SessionID : " + sessionId);
+        //System.out.println("  Message   : " + message);
     }
 
     public void fromApp(Message message, SessionID sessionId) throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
-        System.out.println(name + " : fromApp");
-        System.out.println("  SessionID : " + sessionId);
-        System.out.println("  Message   : " + message);
+        //System.out.println(name + " : fromApp");
+        //System.out.println("  SessionID : " + sessionId);
+        //System.out.println("  Message   : " + message);
         crack(message, sessionId);
     }
 
