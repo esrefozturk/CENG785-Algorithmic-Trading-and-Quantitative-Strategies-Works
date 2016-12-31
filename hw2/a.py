@@ -4,6 +4,18 @@ from statistics import stdev, mean
 STOCKS_DIR = 'stocks'
 INDICES_DIR = 'indices'
 
+def abs(x):
+	return x if x>0 else -(x)
+
+def COV(x, y):
+	mx = mean(x)
+	my = mean(y)
+	n = len(x)
+	s = 0
+	for i in range(n):
+		s += abs(x[i]-mx)*abs(y[i]-my)
+	return s/n
+
 class Entity:
 
 	def __init__(self, type, file):
@@ -39,65 +51,35 @@ class Entity:
 		self.returns.append(0)
 		self.average_return = mean( self.returns[:-1] )
 		self.stdev = stdev( self.returns[:-1] )
+		self.sharpe_ratio = self.average_return/self.stdev
 
 	def calc_alpha_beta(self, indice):
-		self.alphas[indice.name] = self.average_return - indice.average_return
-		self.betas[indice.name] = self.average_return/indice.average_return
+		#print self.name,indice.name,COV(self.returns[:-1],indice.returns[:-1]),(indice.stdev**2)
+		self.betas[indice.name] = COV(self.returns[:-1],indice.returns[:-1])/(indice.stdev**2)
+		self.alphas[indice.name] = self.average_return - self.betas[indice.name]*indice.average_return
 
+def print_csv(filename, stocks):
+	indices = stocks[0].alphas.keys()
+	alphas = [ i.split('-')[1].strip()+'-alpha' for i in indices]
+	betas = [ i.split('-')[1].strip()+'-beta' for i in indices]
+	header = ['Stock','Average Return','Risk'] + alphas + betas + ['Sharpe Ratio']
+	stocks = sorted(stocks,key= lambda stock:-stock.sharpe_ratio)
+	with open(filename,'w') as f:
+		f.write(','.join(header)+'\n')
+		for stock in stocks:
+			lst = [ stock.name,str(stock.average_return),str(stock.stdev) ]
+			for indice in indices:
+				lst.append( str(stock.alphas[indice]) )
+			for indice in indices:
+				lst.append( str(stock.betas[indice]) )
+			lst.append(str(stock.sharpe_ratio))
+			f.write(','.join(lst)+'\n')
 
-
-
-
-PRICE_DIR = 'prices'
-HEADER = 'Date,Open,High,Low,Close,Volume,Adj Close,Average,Return'
-DATE_INDEX = 0
-OPENN_INDEX = 1
-HIGH_INDEX = 2
-LOW_INDEX = 3
-CLOSE_INDEX = 4
-VOLUME_INDEX = 5
-ADJ_INDEX = 6
-AVG_INDEX = 7
-RETURN_INDEX = 8
-
-def get_file_list(path):
-	return listdir(path)
-
-def write_file(file, values):
-	with open(file,'w') as f:
-		f.write(HEADER+'\n')
-		for line in values:
-			f.write( ','.join( line[:1] + map(str,line[1:]) ) + '\n')
-
-
-def parse_file(file):
-	with open(file) as f:
-		lines = [ i.split(',') for i in f.read().split('\n')[1:-1] ]
-	newlines = []
-	for line in lines:
-		date = line[0]
-		openn,high,low,close,volume,adj = tuple( map(float,line[1:]) )
-		avg  = (openn+high+low+close)/4
-		newlines.append([date,openn,high,low,close,volume,adj,avg])
-
-	return newlines
-
-def calc_returns(values):
-	for i in range(len(values)-1):
-		values[i].append( values[i][AVG_INDEX]/values[i+1][AVG_INDEX]-1 )
-	values[-1].append(0)
-
-def print_avg_returns(file,values):
-	summ = sum([i[RETURN_INDEX] for i in values[:-1]])
-	print file.split('.')[0],': AVERAGE RETURN :',summ/len(values[:-1])
-
-def print_std_devs(file,values):
-	returns = [i[RETURN_INDEX] for i in values[:-1]]
-	print file.split('.')[0],': STD_DEV :',  stdev(returns)
 
 
 
 def main():
+
 	stocks = [ i.split('.')[0] for i in listdir(STOCKS_DIR) ]
 	indices = [ i.split('.')[0] for i in listdir(INDICES_DIR) ]
 
@@ -108,7 +90,8 @@ def main():
 		for indice in indices:
 				stock.calc_alpha_beta(indice)
 
-	
+	print_csv("result.csv",stocks)
+
 
 
 
