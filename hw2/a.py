@@ -67,12 +67,9 @@ class Entity:
 		asdas = 0
 		for i in stocks:
 			for j in stocks:
-				asdas +=cov(i.returns[:-1],j.returns[:-1])[0][1]
+				asdas +=cov(i.returns[:-1],j.returns[:-1])[0][1] * 0.04
 		self.stdev = asdas**0.5
 
-		print self.stdev
-
-		'''
 		for i in range(len(stocks[0].returns)):
 			total = 0
 			for s in stocks:
@@ -80,20 +77,28 @@ class Entity:
 			self.returns.append(total/len(stocks))
 
 
-
-
 		self.average_return = mean(self.returns[:-1])
-		self.stdev = stdev(self.returns[:-1])
 		for indice in indices:
 			self.betas[indice.name], self.alphas[indice.name], _, _, _ = linregress(indice.returns[:-1],self.returns[:-1])
-		'''
+
+		self.marjinals = []
+		for stock in stocks:
+			self.marjinals.append( (stock.name, cov(stock.returns[:-1],self.returns[:-1])[0][1]/self.stdev  ) )
+
+		self.counts = []
+		for stock in stocks:
+			self.counts.append( (stock.name,  int(200000/stock.averages[0])   ) )
+
+
 
 
 def print_portfolio(filename, stock):
 	indices = stock.alphas.keys()
 	alphas = [ i.split('-')[1].strip()+'-alpha' for i in indices]
 	betas = [ i.split('-')[1].strip()+'-beta' for i in indices]
-	header = ['Portfolio','Average Return','Risk'] + alphas + betas
+	marjinals = [ i[0]+'-marjinal' for i in stock.marjinals ]
+	counts = [ i[0]+'-count' for i in stock.counts ]
+	header = ['Portfolio','Average Return','Risk'] + alphas + betas + marjinals + counts
 	with open(filename,'w') as f:
 		f.write(','.join(header)+'\n')
 		lst = [ stock.name,str(stock.average_return),str(stock.stdev) ]
@@ -101,6 +106,11 @@ def print_portfolio(filename, stock):
 			lst.append( str(stock.alphas[indice]) )
 		for indice in indices:
 			lst.append( str(stock.betas[indice]) )
+		for i in stock.marjinals:
+			lst.append( str(i[1]) )
+		for i in stock.counts:
+			lst.append( str(i[1]) )
+
 		f.write(','.join(lst)+'\n')
 
 
@@ -164,15 +174,11 @@ def main():
 
 	portfolio_stocks = stocks[:5]
 
-	print "Stock Counts:"
-	for stock in portfolio_stocks:
-		stock.count = int(200000/stock.averages[0])
 
-		print '\t',stock.name,':',stock.count,stock.average_return
 
 	portfolio = Entity()
 	portfolio.build_portfolio(portfolio_stocks,indices)
-	#print_portfolio("portfolio.csv",portfolio)
+	print_portfolio("portfolio.csv",portfolio)
 
 
 

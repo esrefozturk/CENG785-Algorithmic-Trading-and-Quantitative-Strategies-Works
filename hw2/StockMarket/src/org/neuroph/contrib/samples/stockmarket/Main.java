@@ -40,7 +40,7 @@ import org.neuroph.nnet.learning.LMS;
  */
 public class Main {
     
-    public  static void calc(String filename,int maxIterations ) throws FileNotFoundException, IOException{
+    public  static double calc(String filename,int maxIterations ) throws FileNotFoundException, IOException{
                 ArrayList<Double> ar = new ArrayList<Double>();
         FileInputStream fis = new FileInputStream(filename);
         BufferedReader dis = new BufferedReader(new InputStreamReader(fis));
@@ -53,7 +53,7 @@ public class Main {
         ((LMS) neuralNet.getLearningRule()).setLearningRate(0.7);//0-1
         ((LMS) neuralNet.getLearningRule()).setMaxIterations(maxIterations);//0-1
         TrainingSet trainingSet = new TrainingSet();
-        for(int i=0;i<ar.size()-20-5-1;i++){
+        for(int i=0;i<ar.size()-5;i++){
           
             trainingSet.addElement(new SupervisedTrainingElement(new double[]{ar.get(i)/1000,ar.get(i+1)/1000,ar.get(i+2)/1000,ar.get(i+3)/1000,ar.get(i+4)/1000 },
                     new double[]{ar.get(i+5)/1000}));
@@ -61,41 +61,46 @@ public class Main {
         
         }
         
-       
         
         neuralNet.learnInSameThread(trainingSet);
         
         TrainingSet testSet = new TrainingSet();
-        for(int i=ar.size()-20;i<ar.size()-5;i++){
+        for(int i=ar.size()-5-1;i<ar.size()-5;i++){
             testSet.addElement(new TrainingElement(new double[]{ar.get(i)/1000,ar.get(i+1)/1000,ar.get(i+2)/1000,ar.get(i+3)/1000,ar.get(i+4)/1000 }));
         }
         int i=ar.size()-20;
-        for (TrainingElement testElement : testSet.trainingElements()) {
+        double result=0;
+        for (TrainingElement testElement : testSet.trainingElements()) { // loops only once
             neuralNet.setInput(testElement.getInput());
             neuralNet.calculate();
             Vector<Double> networkOutput = neuralNet.getOutput();
-            System.out.print("Input: " + testElement.getInput());
-            System.out.println(" Output: " + networkOutput);
+            //System.out.print("Input: " + testElement.getInput());
+            //System.out.println(" Output: " + networkOutput);
             //System.out.println(networkOutput.get(0)-ar.get(i+4)/1000  );
             i++;
+            result = networkOutput.get(0)*1000;
+            
         }
-
+        return result;
     }
     
 
     public static void main(String[] args)  {
         
         try {
-            calc("../averages/BBRY.csv",1000);
-            calc("../averages/BHP.csv",1000);
-            calc("../averages/DE.csv",1000);
-            calc("../averages/FE.csv",1000);
-            calc("../averages/GOOG.csv",1000);
-            calc("../averages/GS.csv",1000);
-            calc("../averages/JNJ.csv",1000);
-            calc("../averages/KO.csv",1000);
-            calc("../averages/WMT.csv",1000);
-            calc("../averages/XOM.csv",1000);
+            System.out.println("Stock,Predicted");
+            System.out.println("BBRY," + calc("../averages/BBRY.csv",1000));
+            System.out.println("BHP," + calc("../averages/BHP.csv",1000));
+            System.out.println("DE," + calc("../averages/DE.csv",1000));
+            System.out.println("FE," + calc("../averages/FE.csv",1000));
+            System.out.println("GOOG," + calc("../averages/GOOG.csv",1000));
+            System.out.println("GS," + calc("../averages/GS.csv",1000));
+            System.out.println("JNJ," + calc("../averages/JNJ.csv",1000));
+            System.out.println("KO," + calc("../averages/KO.csv",1000));
+            System.out.println("WMT," + calc("../averages/WMT.csv",1000));
+            System.out.println("XOM," + calc("../averages/XOM.csv",1000));
+            
+     
             
             
         } catch (IOException ex) {
