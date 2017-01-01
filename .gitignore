@@ -6,3 +6,4 @@ Log
 Store
 target
 *.zip
+/hw2/StockMarket/dist/
